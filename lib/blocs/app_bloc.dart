@@ -1,14 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_upload/blocs/app_bloc_event.dart';
 import 'package:image_upload/blocs/app_bloc_state.dart';
+import 'package:image_upload/repository.dart';
 
 class AppBloc extends Bloc<AppEvent, AppState> {
   late File imageFile;
 
-  AppBloc() : super(AppState.unknown());
+  final Repository repository;
+
+  AppBloc(this.repository) : super(AppState.unknown());
 
   @override
   Stream<AppState> mapEventToState(AppEvent event) async* {
@@ -30,10 +35,23 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   Stream<AppState> _mapUploadImageToState() async* {
     if (imageFile.lengthSync() >= 4194304) {
-      // TODO: Compress and upload the image to ApiService
       yield AppState.compressingImage();
+      try {
+        File compressedFile = await FlutterNativeImage.compressImage(
+          imageFile.path,
+        );
+
+        yield AppState.uploadingImage();
+        final base64Image = base64Encode(compressedFile.readAsBytesSync());
+
+        await repository.uploadImage(base64Image);
+        yield AppState.uploadedImage();
+      } catch (e) {}
     } else {
-      // TODO: Upload the image to ApiService
+      final base64Image = base64Encode(imageFile.readAsBytesSync());
+
+      await repository.uploadImage(base64Image);
+      yield AppState.uploadedImage();
     }
   }
 }

@@ -9,7 +9,11 @@ class AppState extends Equatable {
 
   const AppState.capturedImage() : this._(status: AppStatus.imageCaptured);
 
-  const AppState.compressingImage() : this._(status: AppStatus.compress);
+  const AppState.compressingImage() : this._(status: AppStatus.compressing);
+
+  const AppState.uploadingImage() : this._(status: AppStatus.uploading);
+
+  const AppState.uploadedImage() : this._(status: AppStatus.uploaded);
 
   @override
   List<Object?> get props => [status];
@@ -18,6 +22,7 @@ class AppState extends Equatable {
 enum AppStatus {
   unknown,
   imageCaptured,
-  compress,
-  upload,
+  compressing,
+  uploading,
+  uploaded,
 }

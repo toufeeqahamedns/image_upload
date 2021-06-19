@@ -22,18 +22,27 @@ class ImageUpload extends StatelessWidget {
                   "Image Captured at location ${context.watch<AppBloc>().imageFile}",
                   textAlign: TextAlign.center,
                 );
+              case AppStatus.compressing:
+                return Text("Compressing Image...");
+              case AppStatus.uploading:
+                return Text("Uploading Image...");
+              case AppStatus.uploading:
+                return Text("Uploaded Image");
+              case AppStatus.unknown:
               default:
-                return Text("Image Upload");
+                return Text("Click Image to Upload");
             }
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: context.watch<AppBloc>().state.status == AppStatus.unknown
+        child: (context.watch<AppBloc>().state.status == AppStatus.unknown ||
+                context.watch<AppBloc>().state.status == AppStatus.uploaded)
             ? Icon(Icons.camera_alt)
             : Icon(Icons.upload),
         onPressed: () {
-          if (context.read<AppBloc>().state.status == AppStatus.unknown) {
+          if (context.read<AppBloc>().state.status == AppStatus.unknown ||
+              context.read<AppBloc>().state.status == AppStatus.uploaded) {
             context.read<AppBloc>().add(CaptureImage());
           } else {
             context.read<AppBloc>().add(UploadImage());

@@ -28,6 +28,9 @@ class ImageUpload extends StatelessWidget {
                 return Text("Uploading Image...");
               case AppStatus.uploading:
                 return Text("Uploaded Image");
+              case AppStatus.compressError:
+              case AppStatus.uploadError:
+                return Text("There was an error");
               case AppStatus.unknown:
               default:
                 return Text("Click Image to Upload");

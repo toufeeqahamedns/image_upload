@@ -40,18 +40,27 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         File compressedFile = await FlutterNativeImage.compressImage(
           imageFile.path,
         );
-
         yield AppState.uploadingImage();
-        final base64Image = base64Encode(compressedFile.readAsBytesSync());
 
-        await repository.uploadImage(base64Image);
-        yield AppState.uploadedImage();
-      } catch (e) {}
+        yield* _uploadImage(compressedFile);
+      } catch (e) {
+        yield AppState.compressError();
+      }
     } else {
-      final base64Image = base64Encode(imageFile.readAsBytesSync());
+      yield AppState.uploadingImage();
+
+      yield* _uploadImage(imageFile);
+    }
+  }
+
+  Stream<AppState> _uploadImage(File fileToUpload) async* {
+    try {
+      final base64Image = base64Encode(fileToUpload.readAsBytesSync());
 
       await repository.uploadImage(base64Image);
       yield AppState.uploadedImage();
+    } catch (e) {
+      yield AppState.uploadError();
     }
   }
 }

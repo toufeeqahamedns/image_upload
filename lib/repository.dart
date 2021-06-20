@@ -10,6 +10,6 @@ class Repository {
   Future<void> uploadImage(String base64Image) async {
     return await _apiService
         .uploadImage(base64Image)
-        .onError((error, stackTrace) => error);
+        .onError((error, stackTrace) => throw Exception(error));
   }
 }

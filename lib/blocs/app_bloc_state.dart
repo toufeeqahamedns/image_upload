@@ -15,6 +15,10 @@ class AppState extends Equatable {
 
   const AppState.uploadedImage() : this._(status: AppStatus.uploaded);
 
+  const AppState.compressError() : this._(status: AppStatus.compressError);
+
+  const AppState.uploadError() : this._(status: AppStatus.uploadError);
+
   @override
   List<Object?> get props => [status];
 }
@@ -25,4 +29,6 @@ enum AppStatus {
   compressing,
   uploading,
   uploaded,
+  compressError,
+  uploadError
 }

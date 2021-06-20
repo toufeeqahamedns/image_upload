@@ -37,9 +37,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     if (imageFile.lengthSync() >= 4194304) {
       yield AppState.compressingImage();
       try {
-        File compressedFile = await FlutterNativeImage.compressImage(
-          imageFile.path,
-        );
+        File compressedFile = await _reduceImageSize(imageFile);
+
         yield AppState.uploadingImage();
 
         yield* _uploadImage(compressedFile);
@@ -62,5 +61,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     } catch (e) {
       yield AppState.uploadError();
     }
+  }
+
+  Future<File> _reduceImageSize(File fileToCompress) async {
+    File file = await FlutterNativeImage.compressImage(
+      fileToCompress.path,
+    );
+
+    if (file.lengthSync() >= 4194304) {
+      return _reduceImageSize(file);
+    }
+    return file;
   }
 }
